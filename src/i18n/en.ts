@@ -37,6 +37,7 @@ export const en: Translation = {
       title: 'Until End of Month',
       description: 'Until the end of this month',
     },
+    settingsButton: 'Change Settings',
     copyButton: 'Copy URL',
     copiedButton: 'Copied!',
     units: {

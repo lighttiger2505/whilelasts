@@ -35,6 +35,7 @@ export interface Translation {
       title: string;
       description: string;
     };
+    settingsButton: string;
     copyButton: string;
     copiedButton: string;
     units: {
@@ -86,6 +87,7 @@ export const ja: Translation = {
       title: '今月末まで',
       description: '今月の終わりまで',
     },
+    settingsButton: '設定を変更',
     copyButton: 'URLをコピー',
     copiedButton: 'コピーしました！',
     units: {

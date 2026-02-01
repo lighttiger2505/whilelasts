@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect, Link } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { decodeConfig } from '@/lib/url-codec';
 import { validateConfig } from '@/lib/validation';
@@ -81,7 +81,13 @@ function ViewPage() {
         />
       </div>
 
-      <div className="text-center">
+      <div className="flex justify-center gap-4">
+        <Link
+          to="/settings"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2"
+        >
+          {t.view.settingsButton}
+        </Link>
         <ShareLinkButton />
       </div>
     </div>
