@@ -12,7 +12,8 @@
       "Bash(pnpm dlx tailwindcss:*)",
       "Bash(pnpm run build:*)",
       "Bash(pnpm remove:*)",
-      "Bash(pnpm run dev)"
+      "Bash(pnpm run dev)",
+      "Bash(pnpm dev)"
     ]
   }
 }
