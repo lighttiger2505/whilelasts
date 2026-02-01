@@ -7,6 +7,7 @@ import {
   getCurrentTimeInTimeZone,
 } from '@/lib/time-calculator';
 import { useI18n } from '@/i18n';
+import { Progress } from '@/components/ui/progress';
 
 type ViewSearch = {
   s: string;
@@ -34,6 +35,19 @@ export const Route = createFileRoute('/view')({
   },
   component: ViewPage,
 });
+
+/**
+ * 進捗率を計算（0-100%）
+ */
+function calculateProgress(start: Date, current: Date, target: Date): number {
+  const total = target.getTime() - start.getTime();
+  const elapsed = current.getTime() - start.getTime();
+
+  if (total <= 0) return 100;
+
+  const percentage = (elapsed / total) * 100;
+  return Math.min(100, Math.max(0, percentage));
+}
 
 function ViewPage() {
   const { config } = Route.useRouteContext();
@@ -65,18 +79,30 @@ function ViewPage() {
       <div className="grid gap-6 md:grid-cols-2">
         <TimeCard
           title={t.view.lifespan.title}
+          startDate={targets.lifespan.startDate}
+          targetDate={targets.lifespan.targetDate}
+          currentTime={currentTime}
           remaining={targets.lifespan.remaining}
         />
         <TimeCard
           title={t.view.nextBirthday.title}
+          startDate={targets.nextBirthday.startDate}
+          targetDate={targets.nextBirthday.targetDate}
+          currentTime={currentTime}
           remaining={targets.nextBirthday.remaining}
         />
         <TimeCard
           title={t.view.endOfYear.title}
+          startDate={targets.endOfYear.startDate}
+          targetDate={targets.endOfYear.targetDate}
+          currentTime={currentTime}
           remaining={targets.endOfYear.remaining}
         />
         <TimeCard
           title={t.view.endOfMonth.title}
+          startDate={targets.endOfMonth.startDate}
+          targetDate={targets.endOfMonth.targetDate}
+          currentTime={currentTime}
           remaining={targets.endOfMonth.remaining}
         />
       </div>
@@ -96,9 +122,15 @@ function ViewPage() {
 
 function TimeCard({
   title,
+  startDate,
+  targetDate,
+  currentTime,
   remaining,
 }: {
   title: string;
+  startDate: Date;
+  targetDate: Date;
+  currentTime: Date;
   remaining: {
     years: number;
     months: number;
@@ -110,6 +142,9 @@ function TimeCard({
   };
 }) {
   const { t } = useI18n();
+
+  // 進捗率を計算
+  const progress = calculateProgress(startDate, currentTime, targetDate);
 
   // 単位のメタデータ（秒を除く）
   type TimeUnit = {
@@ -132,7 +167,17 @@ function TimeCard({
 
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-      <h2 className="text-xl font-semibold mb-1">{title}</h2>
+      <h2 className="text-xl font-semibold mb-3">{title}</h2>
+
+      {/* プログレスバー */}
+      <div className="mb-4">
+        <Progress value={progress} className="h-3" />
+        <p className="text-xs text-muted-foreground mt-1 text-right">
+          {progress.toFixed(1)}%
+        </p>
+      </div>
+
+      {/* 既存の時間表示 */}
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2 text-sm">
           {visibleUnits.map((unit) => {

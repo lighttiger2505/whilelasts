@@ -28,6 +28,14 @@ export interface TimeRemaining {
 }
 
 /**
+ * 誕生日（開始日）を計算
+ */
+export function calculateBirthday(birthday: string): Date {
+  const date = new Date(birthday);
+  return setMilliseconds(setSeconds(setMinutes(setHours(date, 0), 0), 0), 0);
+}
+
+/**
  * 死亡予定日を計算（誕生日 + a歳の誕生日 00:00:00）
  */
 export function calculateDeathDate(config: ConfigV1): Date {
@@ -91,12 +99,62 @@ export function calculateNextBirthday(
 }
 
 /**
+ * 前回の誕生日を計算（次の誕生日の1年前）
+ */
+export function calculatePreviousBirthday(
+  birthday: string,
+  currentTime: Date,
+  timeZone: string
+): Date {
+  const nextBirthday = calculateNextBirthday(birthday, currentTime, timeZone);
+  return addYears(nextBirthday, -1);
+}
+
+/**
+ * 今年の1月1日 00:00:00 を計算
+ */
+export function calculateStartOfYear(currentTime: Date): Date {
+  return setMilliseconds(
+    setSeconds(
+      setMinutes(
+        setHours(
+          new Date(currentTime.getFullYear(), 0, 1),
+          0
+        ),
+        0
+      ),
+      0
+    ),
+    0
+  );
+}
+
+/**
  * 今年末を計算
  */
 export function calculateEndOfYear(currentTime: Date): Date {
   const endOfYearDate = endOfYear(currentTime);
   // 23:59:59に設定
   return setMilliseconds(setSeconds(setMinutes(setHours(endOfYearDate, 23), 59), 59), 999);
+}
+
+/**
+ * 今月の1日 00:00:00 を計算
+ */
+export function calculateStartOfMonth(currentTime: Date): Date {
+  return setMilliseconds(
+    setSeconds(
+      setMinutes(
+        setHours(
+          new Date(currentTime.getFullYear(), currentTime.getMonth(), 1),
+          0
+        ),
+        0
+      ),
+      0
+    ),
+    0
+  );
 }
 
 /**
@@ -112,25 +170,33 @@ export function calculateEndOfMonth(currentTime: Date): Date {
  * 設定に基づいて全ての目標日時を計算
  */
 export function calculateAllTargets(config: ConfigV1, currentTime: Date) {
+  const birthday = calculateBirthday(config.b);
   const deathDate = calculateDeathDate(config);
+  const previousBirthday = calculatePreviousBirthday(config.b, currentTime, config.t);
   const nextBirthday = calculateNextBirthday(config.b, currentTime, config.t);
+  const startOfYear = calculateStartOfYear(currentTime);
   const endOfYear = calculateEndOfYear(currentTime);
+  const startOfMonth = calculateStartOfMonth(currentTime);
   const endOfMonth = calculateEndOfMonth(currentTime);
 
   return {
     lifespan: {
+      startDate: birthday,
       targetDate: deathDate,
       remaining: calculateTimeRemaining(currentTime, deathDate),
     },
     nextBirthday: {
+      startDate: previousBirthday,
       targetDate: nextBirthday,
       remaining: calculateTimeRemaining(currentTime, nextBirthday),
     },
     endOfYear: {
+      startDate: startOfYear,
       targetDate: endOfYear,
       remaining: calculateTimeRemaining(currentTime, endOfYear),
     },
     endOfMonth: {
+      startDate: startOfMonth,
       targetDate: endOfMonth,
       remaining: calculateTimeRemaining(currentTime, endOfMonth),
     },
