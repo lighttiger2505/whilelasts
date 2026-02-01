@@ -26,3 +26,7 @@ dist-ssr
 # TanStack Router
 .tanstack
 routeTree.gen.ts
+
+# Wrangler
+.wrangler/
+.dev.vars

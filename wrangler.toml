@@ -1,0 +1,10 @@
+name = "whilelasts"
+compatibility_date = "2024-01-01"
+
+[env.production]
+# Cloudflare Pages プロジェクトの設定
+# pages_build_output_dir は指定不要（CLI引数で指定）
+
+# SPA向けルーティング設定
+[[env.production.routes]]
+pattern = "/*"
