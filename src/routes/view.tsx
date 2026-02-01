@@ -6,7 +6,7 @@ import {
   calculateAllTargets,
   getCurrentTimeInTimeZone,
 } from '@/lib/time-calculator';
-import { useI18n, interpolate } from '@/i18n';
+import { useI18n } from '@/i18n';
 
 type ViewSearch = {
   s: string;
@@ -105,29 +105,39 @@ function TimeCard({
 }) {
   const { t } = useI18n();
 
+  // 単位のメタデータ（秒を除く）
+  type TimeUnit = {
+    key: keyof typeof remaining;
+    getValue: (r: typeof remaining) => number;
+    getLabel: (units: typeof t.view.units) => string;
+  };
+
+  const gridUnits: TimeUnit[] = [
+    { key: 'years', getValue: (r) => r.years, getLabel: (u) => u.years },
+    { key: 'months', getValue: (r) => r.months, getLabel: (u) => u.months },
+    { key: 'weeks', getValue: (r) => r.weeks, getLabel: (u) => u.weeks },
+    { key: 'days', getValue: (r) => r.days, getLabel: (u) => u.days },
+    { key: 'hours', getValue: (r) => r.hours, getLabel: (u) => u.hours },
+    { key: 'minutes', getValue: (r) => r.minutes, getLabel: (u) => u.minutes },
+  ];
+
+  // 値がゼロより大きい単位のみをフィルタリング
+  const visibleUnits = gridUnits.filter(unit => unit.getValue(remaining) > 0);
+
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
       <h2 className="text-xl font-semibold mb-1">{title}</h2>
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2 text-sm">
-          <div>
-            <span className="font-semibold">{remaining.years.toLocaleString()}</span> {t.view.units.years}
-          </div>
-          <div>
-            <span className="font-semibold">{remaining.months.toLocaleString()}</span> {t.view.units.months}
-          </div>
-          <div>
-            <span className="font-semibold">{remaining.weeks.toLocaleString()}</span> {t.view.units.weeks}
-          </div>
-          <div>
-            <span className="font-semibold">{remaining.days.toLocaleString()}</span> {t.view.units.days}
-          </div>
-          <div>
-            <span className="font-semibold">{remaining.hours.toLocaleString()}</span> {t.view.units.hours}
-          </div>
-          <div>
-            <span className="font-semibold">{remaining.minutes.toLocaleString()}</span> {t.view.units.minutes}
-          </div>
+          {visibleUnits.map((unit) => {
+            const value = unit.getValue(remaining);
+            const label = unit.getLabel(t.view.units);
+            return (
+              <div key={unit.key}>
+                <span className="font-semibold">{value.toLocaleString()}</span> {label}
+              </div>
+            );
+          })}
         </div>
         <div className="text-2xl font-bold text-center pt-2 border-t">
           {remaining.seconds.toLocaleString()} {t.view.units.seconds}
