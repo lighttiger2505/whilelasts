@@ -65,22 +65,18 @@ function ViewPage() {
       <div className="grid gap-6 md:grid-cols-2">
         <TimeCard
           title={t.view.lifespan.title}
-          description={interpolate(t.view.lifespan.description, { age: config.a })}
           remaining={targets.lifespan.remaining}
         />
         <TimeCard
           title={t.view.nextBirthday.title}
-          description={t.view.nextBirthday.description}
           remaining={targets.nextBirthday.remaining}
         />
         <TimeCard
           title={t.view.endOfYear.title}
-          description={t.view.endOfYear.description}
           remaining={targets.endOfYear.remaining}
         />
         <TimeCard
           title={t.view.endOfMonth.title}
-          description={t.view.endOfMonth.description}
           remaining={targets.endOfMonth.remaining}
         />
       </div>
@@ -94,11 +90,9 @@ function ViewPage() {
 
 function TimeCard({
   title,
-  description,
   remaining,
 }: {
   title: string;
-  description: string;
   remaining: {
     years: number;
     months: number;
@@ -114,7 +108,6 @@ function TimeCard({
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
       <h2 className="text-xl font-semibold mb-1">{title}</h2>
-      <p className="text-sm text-muted-foreground mb-4">{description}</p>
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
