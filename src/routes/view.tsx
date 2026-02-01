@@ -139,9 +139,6 @@ function TimeCard({
             );
           })}
         </div>
-        <div className="text-2xl font-bold text-center pt-2 border-t">
-          {remaining.seconds.toLocaleString()} {t.view.units.seconds}
-        </div>
       </div>
     </div>
   );
