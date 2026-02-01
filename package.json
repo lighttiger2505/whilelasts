@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsr generate && tsc --noEmit && vite build",
     "preview": "vite preview",
     "deploy": "pnpm build && wrangler pages deploy dist --project-name=whilelasts"
   },
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
+    "@tanstack/router-cli": "^1.157.18",
     "@tanstack/router-devtools": "^1.157.18",
     "@tanstack/router-vite-plugin": "^1.157.18",
     "@types/react": "^19.2.10",
