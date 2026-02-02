@@ -88,16 +88,16 @@ export function calculateProgressMetrics(
 
   switch (unit) {
     case 'years':
-      elapsed = differenceInYears(currentTime, startDate);
-      total = differenceInYears(targetDate, startDate);
+      elapsed = differenceInYears(currentTime, startDate) + 1;
+      total = differenceInYears(targetDate, startDate) + 1;
       break;
     case 'months':
-      elapsed = differenceInMonths(currentTime, startDate);
-      total = differenceInMonths(targetDate, startDate);
+      elapsed = differenceInMonths(currentTime, startDate) + 1;
+      total = differenceInMonths(targetDate, startDate) + 1;
       break;
     case 'days':
-      elapsed = differenceInDays(currentTime, startDate);
-      total = differenceInDays(targetDate, startDate);
+      elapsed = differenceInDays(currentTime, startDate) + 1;
+      total = differenceInDays(targetDate, startDate) + 1;
       break;
   }
 

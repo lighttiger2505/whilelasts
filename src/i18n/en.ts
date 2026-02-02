@@ -21,7 +21,7 @@ export const en: Translation = {
   view: {
     title: 'Time Remaining',
     timeZone: 'Time Zone',
-    progressFormat: 'Remaining {elapsed} / {total}',
+    progressFormat: '{elapsed} / {total}',
     lifespan: {
       title: 'Until Lifespan',
       description: 'Until {{age}}th birthday',
