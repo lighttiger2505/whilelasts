@@ -13,7 +13,14 @@
       "Bash(pnpm run build:*)",
       "Bash(pnpm remove:*)",
       "Bash(pnpm run dev)",
-      "Bash(pnpm dev)"
+      "Bash(pnpm dev)",
+      "Bash(find:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_evaluate"
     ]
   }
 }
