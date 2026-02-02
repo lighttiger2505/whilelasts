@@ -1,5 +1,6 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
+import { intervalToDuration } from 'date-fns';
 import { decodeConfig } from '@/lib/url-codec';
 import { validateConfig } from '@/lib/validation';
 import {
@@ -83,6 +84,7 @@ function ViewPage() {
           targetDate={targets.lifespan.targetDate}
           currentTime={currentTime}
           remaining={targets.lifespan.remaining}
+          titleUnits={['years', 'months']}
         />
         <TimeCard
           title={t.view.nextBirthday.title}
@@ -90,6 +92,7 @@ function ViewPage() {
           targetDate={targets.nextBirthday.targetDate}
           currentTime={currentTime}
           remaining={targets.nextBirthday.remaining}
+          titleUnits={['months', 'days']}
         />
         <TimeCard
           title={t.view.endOfYear.title}
@@ -97,6 +100,7 @@ function ViewPage() {
           targetDate={targets.endOfYear.targetDate}
           currentTime={currentTime}
           remaining={targets.endOfYear.remaining}
+          titleUnits={['months', 'days']}
         />
         <TimeCard
           title={t.view.endOfMonth.title}
@@ -104,6 +108,7 @@ function ViewPage() {
           targetDate={targets.endOfMonth.targetDate}
           currentTime={currentTime}
           remaining={targets.endOfMonth.remaining}
+          titleUnits={['days']}
         />
       </div>
 
@@ -126,6 +131,7 @@ function TimeCard({
   targetDate,
   currentTime,
   remaining,
+  titleUnits,
 }: {
   title: string;
   startDate: Date;
@@ -140,6 +146,7 @@ function TimeCard({
     minutes: number;
     seconds: number;
   };
+  titleUnits?: Array<keyof typeof remaining>;
 }) {
   const { t } = useI18n();
 
@@ -165,9 +172,59 @@ function TimeCard({
   // 値がゼロより大きい単位のみをフィルタリング
   const visibleUnits = gridUnits.filter(unit => unit.getValue(remaining) > 0);
 
+  // タイトル用の階層的な時間を計算
+  const duration = intervalToDuration({
+    start: currentTime,
+    end: targetDate,
+  });
+
+  // タイトル用の残り時間を取得（階層的な表示用）
+  const getHierarchicalValue = (unitKey: keyof typeof remaining): number => {
+    switch (unitKey) {
+      case 'years':
+        return duration.years ?? 0;
+      case 'months':
+        return duration.months ?? 0;
+      case 'weeks':
+        // intervalToDurationはweeksを返さないので、daysから計算
+        return Math.floor((duration.days ?? 0) / 7);
+      case 'days':
+        return duration.days ?? 0;
+      case 'hours':
+        return duration.hours ?? 0;
+      case 'minutes':
+        return duration.minutes ?? 0;
+      case 'seconds':
+        return duration.seconds ?? 0;
+      default:
+        return 0;
+    }
+  };
+
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-      <h2 className="text-xl font-semibold mb-3">{title}</h2>
+      <h2 className="text-xl font-semibold mb-3">
+        {title}
+        {titleUnits && titleUnits.length > 0 && (
+          <>
+            {' '}
+            <span className="text-primary font-bold">
+              {titleUnits.map((unitKey, index) => {
+                const unit = gridUnits.find(u => u.key === unitKey);
+                if (!unit) return null;
+                const value = getHierarchicalValue(unitKey);
+                const label = unit.getLabel(t.view.units);
+                return (
+                  <span key={unitKey}>
+                    {value.toLocaleString()}{label}
+                    {index < titleUnits.length - 1 && ''}
+                  </span>
+                );
+              }).filter(Boolean)}
+            </span>
+          </>
+        )}
+      </h2>
 
       {/* プログレスバー */}
       <div className="mb-4">
