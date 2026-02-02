@@ -30,3 +30,6 @@ routeTree.gen.ts
 # Wrangler
 .wrangler/
 .dev.vars
+
+# Playwright
+.playwright-mcp
