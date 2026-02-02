@@ -6,6 +6,7 @@ import { validateConfig } from '@/lib/validation';
 import {
   calculateAllTargets,
   getCurrentTimeInTimeZone,
+  type ProgressMetrics,
 } from '@/lib/time-calculator';
 import { useI18n } from '@/i18n';
 import { Progress } from '@/components/ui/progress';
@@ -84,6 +85,7 @@ function ViewPage() {
           targetDate={targets.lifespan.targetDate}
           currentTime={currentTime}
           remaining={targets.lifespan.remaining}
+          progressMetrics={targets.lifespan.progressMetrics}
           titleUnits={['years', 'months']}
         />
         <TimeCard
@@ -92,6 +94,7 @@ function ViewPage() {
           targetDate={targets.nextBirthday.targetDate}
           currentTime={currentTime}
           remaining={targets.nextBirthday.remaining}
+          progressMetrics={targets.nextBirthday.progressMetrics}
           titleUnits={['months', 'days']}
         />
         <TimeCard
@@ -100,6 +103,7 @@ function ViewPage() {
           targetDate={targets.endOfYear.targetDate}
           currentTime={currentTime}
           remaining={targets.endOfYear.remaining}
+          progressMetrics={targets.endOfYear.progressMetrics}
           titleUnits={['months', 'days']}
         />
         <TimeCard
@@ -108,6 +112,7 @@ function ViewPage() {
           targetDate={targets.endOfMonth.targetDate}
           currentTime={currentTime}
           remaining={targets.endOfMonth.remaining}
+          progressMetrics={targets.endOfMonth.progressMetrics}
           titleUnits={['days']}
         />
       </div>
@@ -131,6 +136,7 @@ function TimeCard({
   targetDate,
   currentTime,
   remaining,
+  progressMetrics,
   titleUnits,
 }: {
   title: string;
@@ -146,6 +152,7 @@ function TimeCard({
     minutes: number;
     seconds: number;
   };
+  progressMetrics: ProgressMetrics;
   titleUnits?: Array<keyof typeof remaining>;
 }) {
   const { t } = useI18n();
@@ -226,9 +233,17 @@ function TimeCard({
         )}
       </h2>
 
-      {/* プログレスバー */}
       <div className="mb-4">
+        {/* プログレスバー */}
         <Progress value={progress} className="h-3" />
+        {/* 現在値と最大値の表示 */}
+        <p className="text-xs text-muted-foreground mt-1">
+          {t.view.progressFormat
+            .replace('{elapsed}', Math.max(0, progressMetrics.elapsed).toLocaleString())
+            .replace('{total}', Math.max(0, progressMetrics.total).toLocaleString())}
+          {t.view.units[progressMetrics.unit]}
+        </p>
+        {/* パーセント表示 */}
         <p className="text-xs text-muted-foreground mt-1 text-right">
           {progress.toFixed(1)}%
         </p>

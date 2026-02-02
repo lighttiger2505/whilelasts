@@ -27,6 +27,12 @@ export interface TimeRemaining {
   seconds: number;
 }
 
+export interface ProgressMetrics {
+  elapsed: number;    // 経過した期間
+  total: number;      // 全体の期間
+  unit: 'years' | 'months' | 'days';  // 表示単位
+}
+
 /**
  * 誕生日（開始日）を計算
  */
@@ -65,6 +71,40 @@ export function calculateTimeRemaining(from: Date, to: Date): TimeRemaining {
     hours: differenceInHours(to, from),
     minutes: differenceInMinutes(to, from),
     seconds: differenceInSeconds(to, from),
+  };
+}
+
+/**
+ * 進捗メトリクスを計算（経過期間/全体期間）
+ */
+export function calculateProgressMetrics(
+  startDate: Date,
+  currentTime: Date,
+  targetDate: Date,
+  unit: 'years' | 'months' | 'days'
+): ProgressMetrics {
+  let elapsed: number;
+  let total: number;
+
+  switch (unit) {
+    case 'years':
+      elapsed = differenceInYears(currentTime, startDate);
+      total = differenceInYears(targetDate, startDate);
+      break;
+    case 'months':
+      elapsed = differenceInMonths(currentTime, startDate);
+      total = differenceInMonths(targetDate, startDate);
+      break;
+    case 'days':
+      elapsed = differenceInDays(currentTime, startDate);
+      total = differenceInDays(targetDate, startDate);
+      break;
+  }
+
+  return {
+    elapsed,
+    total,
+    unit,
   };
 }
 
@@ -184,21 +224,25 @@ export function calculateAllTargets(config: ConfigV1, currentTime: Date) {
       startDate: birthday,
       targetDate: deathDate,
       remaining: calculateTimeRemaining(currentTime, deathDate),
+      progressMetrics: calculateProgressMetrics(birthday, currentTime, deathDate, 'years'),
     },
     nextBirthday: {
       startDate: previousBirthday,
       targetDate: nextBirthday,
       remaining: calculateTimeRemaining(currentTime, nextBirthday),
+      progressMetrics: calculateProgressMetrics(previousBirthday, currentTime, nextBirthday, 'months'),
     },
     endOfYear: {
       startDate: startOfYear,
       targetDate: endOfYear,
       remaining: calculateTimeRemaining(currentTime, endOfYear),
+      progressMetrics: calculateProgressMetrics(startOfYear, currentTime, endOfYear, 'months'),
     },
     endOfMonth: {
       startDate: startOfMonth,
       targetDate: endOfMonth,
       remaining: calculateTimeRemaining(currentTime, endOfMonth),
+      progressMetrics: calculateProgressMetrics(startOfMonth, currentTime, endOfMonth, 'days'),
     },
   };
 }

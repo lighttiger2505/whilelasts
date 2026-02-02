@@ -19,6 +19,7 @@ export interface Translation {
   view: {
     title: string;
     timeZone: string;
+    progressFormat: string;
     lifespan: {
       title: string;
       description: string;
@@ -71,6 +72,7 @@ export const ja: Translation = {
   view: {
     title: '残り時間',
     timeZone: 'タイムゾーン',
+    progressFormat: '残り {elapsed} / {total}',
     lifespan: {
       title: '寿命まで',
       description: '{{age}}歳の誕生日まで',
