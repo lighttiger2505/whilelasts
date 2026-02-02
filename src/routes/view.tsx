@@ -236,17 +236,19 @@ function TimeCard({
       <div className="mb-4">
         {/* プログレスバー */}
         <Progress value={progress} className="h-3" />
-        {/* 現在値と最大値の表示 */}
-        <p className="text-xs text-muted-foreground mt-1">
-          {t.view.progressFormat
-            .replace('{elapsed}', Math.max(0, progressMetrics.elapsed).toLocaleString())
-            .replace('{total}', Math.max(0, progressMetrics.total).toLocaleString())}
-          {t.view.units[progressMetrics.unit]}
-        </p>
-        {/* パーセント表示 */}
-        <p className="text-xs text-muted-foreground mt-1 text-right">
-          {progress.toFixed(1)}%
-        </p>
+        <div className="flex justify-between items-center text-xs text-muted-foreground mt-1">
+          {/* 現在値と最大値の表示 */}
+          <span>
+            {t.view.progressFormat
+              .replace('{elapsed}', Math.max(0, progressMetrics.elapsed).toLocaleString())
+              .replace('{total}', Math.max(0, progressMetrics.total).toLocaleString())}
+            {t.view.units[progressMetrics.unit]}
+          </span>
+          {/* パーセント表示 */}
+          <span>
+            {progress.toFixed(1)}%
+          </span>
+        </div>
       </div>
 
       {/* 既存の時間表示 */}
