@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { encodeConfig } from '@/lib/url-codec';
 import { validateAge, validateBirthday, validateTimeZone } from '@/lib/validation';
 import { TIMEZONES, getBrowserTimeZone } from '@/lib/timezones';
@@ -116,16 +116,17 @@ function SettingsPage() {
 
             <div className="space-y-2">
               <Label htmlFor="timeZone">{t.settings.timeZoneLabel}</Label>
-              <Select
-                id="timeZone"
-                value={timeZone}
-                onChange={(e) => setTimeZone(e.target.value)}
-              >
-                {TIMEZONES.map((tz) => (
-                  <option key={tz.value} value={tz.value}>
-                    {tz.label}
-                  </option>
-                ))}
+              <Select value={timeZone} onValueChange={setTimeZone}>
+                <SelectTrigger id="timeZone">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIMEZONES.map((tz) => (
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
               {errors.timeZone && (
                 <p className="text-sm text-destructive">{errors.timeZone}</p>
