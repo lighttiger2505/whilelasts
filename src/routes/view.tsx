@@ -304,8 +304,8 @@ function ShareLinkButton() {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    } catch {
+      // クリップボードへのコピー失敗時
     }
   };
 

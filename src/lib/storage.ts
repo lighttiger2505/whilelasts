@@ -17,16 +17,14 @@ export function loadConfigFromStorage(): ConfigV1 | null {
     const parsed = JSON.parse(stored)
 
     if (!validateConfig(parsed)) {
-      console.warn('Invalid config in localStorage')
       // 不正なデータを削除
       clearConfigFromStorage()
       return null
     }
 
     return parsed
-  } catch (error) {
+  } catch {
     // SecurityError（プライベートモード）やSyntaxError（不正なJSON）をキャッチ
-    console.warn('Failed to load config from localStorage:', error)
     return null
   }
 }
@@ -41,9 +39,8 @@ export function saveConfigToStorage(config: ConfigV1): boolean {
     const json = JSON.stringify(config)
     localStorage.setItem(STORAGE_KEY, json)
     return true
-  } catch (error) {
+  } catch {
     // QuotaExceededError（容量超過）やSecurityError（プライベートモード）をキャッチ
-    console.warn('Failed to save config to localStorage:', error)
     return false
   }
 }
@@ -54,7 +51,7 @@ export function saveConfigToStorage(config: ConfigV1): boolean {
 export function clearConfigFromStorage(): void {
   try {
     localStorage.removeItem(STORAGE_KEY)
-  } catch (error) {
-    console.warn('Failed to clear config from localStorage:', error)
+  } catch {
+    // SecurityError（プライベートモード）をキャッチ
   }
 }
