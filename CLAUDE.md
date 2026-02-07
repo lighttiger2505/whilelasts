@@ -21,14 +21,31 @@ pnpm build
 
 # ビルドしたアプリのプレビュー
 pnpm preview
+
+# コードのlintチェック（oxlint）
+pnpm lint
+
+# lintエラーの自動修正
+pnpm lint:fix
+
+# TypeScriptの型チェック
+pnpm type-check
+
+# 一括チェック（TSRルート生成 + lint + 型チェック）
+pnpm check
+
+# Cloudflare Pagesへデプロイ（ビルド含む）
+pnpm deploy
 ```
 
 ## 技術スタック
 
 - **フレームワーク**: React 19 + TypeScript + Vite
 - **ルーティング**: TanStack Router (file-based routing)
+  - `tsr generate`でルート定義を自動生成（ビルド前に必須）
 - **UI**: shadcn/ui + Tailwind CSS v4
 - **日時計算**: date-fns + date-fns-tz
+- **Linter**: oxlint（高速JavaScriptリンター）
 - **パッケージマネージャー**: pnpm
 
 ## コアアーキテクチャ
