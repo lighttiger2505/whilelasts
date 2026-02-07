@@ -33,3 +33,6 @@ routeTree.gen.ts
 
 # Playwright
 .playwright-mcp
+
+# Oxc cache
+.oxc_cache/

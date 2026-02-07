@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react",
+    "typescript",
+    "import",
+    "jsx-a11y",
+    "unicorn"
+  ],
+  "rules": {
+    "no-console": "warn",
+    "no-debugger": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{ts,tsx}"],
+      "rules": {
+        "typescript/no-explicit-any": "error",
+        "typescript/no-unused-vars": "error",
+        "typescript/no-non-null-assertion": "warn"
+      }
+    },
+    {
+      "files": ["**/*.{jsx,tsx}"],
+      "rules": {
+        "react/jsx-key": "error",
+        "react/jsx-no-duplicate-props": "error",
+        "react/no-children-prop": "error",
+        "react/react-in-jsx-scope": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "src/routeTree.gen.ts",
+    ".tanstack/**",
+    "dist/**",
+    "node_modules/**"
+  ],
+  "env": {
+    "browser": true,
+    "es2020": true
+  }
+}
