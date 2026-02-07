@@ -1,8 +1,9 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { intervalToDuration } from 'date-fns';
-import { decodeConfig } from '@/lib/url-codec';
+import { encodeConfig, decodeConfig } from '@/lib/url-codec';
 import { validateConfig } from '@/lib/validation';
+import { loadConfigFromStorage, saveConfigToStorage } from '@/lib/storage';
 import {
   calculateAllTargets,
   getCurrentTimeInTimeZone,
@@ -12,28 +13,36 @@ import { useI18n } from '@/i18n';
 import { Progress } from '@/components/ui/progress';
 
 type ViewSearch = {
-  s: string;
+  s?: string;
 };
 
 export const Route = createFileRoute('/view')({
   validateSearch: (search: Record<string, unknown>): ViewSearch => {
     return {
-      s: (search.s as string) || '',
+      s: search.s ? (search.s as string) : undefined,
     };
   },
   beforeLoad: ({ search }) => {
     const { s } = search;
 
-    if (!s) {
-      throw redirect({ to: '/settings' });
+    // 優先順位1: URLパラメータ
+    if (s) {
+      const config = decodeConfig(s);
+      if (config && validateConfig(config)) {
+        // LocalStorageにも保存
+        saveConfigToStorage(config);
+        return { config };
+      }
     }
 
-    const config = decodeConfig(s);
-    if (!config || !validateConfig(config)) {
-      throw redirect({ to: '/settings' });
+    // 優先順位2: LocalStorage
+    const storedConfig = loadConfigFromStorage();
+    if (storedConfig) {
+      return { config: storedConfig };
     }
 
-    return { config };
+    // どちらもない場合は設定画面へリダイレクト
+    throw redirect({ to: '/settings' });
   },
   component: ViewPage,
 });
@@ -53,10 +62,20 @@ function calculateProgress(start: Date, current: Date, target: Date): number {
 
 function ViewPage() {
   const { config } = Route.useRouteContext();
+  const search = Route.useSearch();
   const { t } = useI18n();
   const [currentTime, setCurrentTime] = useState(() =>
     getCurrentTimeInTimeZone(config.t)
   );
+
+  // URLにsパラメータを追加（URL共有機能のため）
+  useEffect(() => {
+    if (!search.s) {
+      const encoded = encodeConfig(config);
+      const newUrl = `${window.location.pathname}?s=${encoded}`;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [search.s, config]);
 
   // リアルタイム更新
   useEffect(() => {
@@ -120,6 +139,7 @@ function ViewPage() {
       <div className="flex justify-center gap-4">
         <Link
           to="/settings"
+          search={{ s: encodeConfig(config) }}
           className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2"
         >
           {t.view.settingsButton}
