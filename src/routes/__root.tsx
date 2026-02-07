@@ -1,7 +1,9 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import { useState, useEffect } from 'react';
 import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
+import { loadConfigFromStorage } from '@/lib/storage';
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -9,6 +11,14 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   const { t, locale, setLocale } = useI18n();
+  const [timeZone, setTimeZone] = useState<string | null>(null);
+
+  useEffect(() => {
+    const config = loadConfigFromStorage();
+    if (config) {
+      setTimeZone(config.t);
+    }
+  }, []);
 
   const toggleLocale = () => {
     setLocale(locale === 'ja' ? 'en' : 'ja');
@@ -21,9 +31,16 @@ function RootLayout() {
           <Link to="/" className="text-2xl font-bold">
             {t.common.appName}
           </Link>
-          <Button variant="ghost" size="sm" onClick={toggleLocale}>
-            {locale === 'ja' ? 'EN' : 'JA'}
-          </Button>
+          <div className="flex items-center gap-4">
+            {timeZone && (
+              <span className="text-sm">
+                {t.view.timeZone}: {timeZone}
+              </span>
+            )}
+            <Button variant="ghost" size="sm" onClick={toggleLocale}>
+              {locale === 'ja' ? 'EN' : 'JA'}
+            </Button>
+          </div>
         </div>
       </header>
 

@@ -98,12 +98,9 @@ function ViewPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2" style={{ fontFamily }}>
+        <h1 className="text-3xl font-bold" style={{ fontFamily }}>
           {phrase}
         </h1>
-        <p className="text-muted-foreground">
-          {t.view.timeZone}: {config.t}
-        </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
