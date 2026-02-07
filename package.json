@@ -12,7 +12,7 @@
     "lint": "oxlint src --tsconfig tsconfig.json",
     "lint:fix": "oxlint src --tsconfig tsconfig.json --fix",
     "type-check": "tsc --noEmit",
-    "check": "pnpm lint && pnpm type-check"
+    "check": "tsr generate && pnpm lint && pnpm type-check"
   },
   "keywords": [],
   "author": "",
