@@ -64,13 +64,16 @@ function calculateProgress(start: Date, current: Date, target: Date): number {
 function ViewPage() {
   const { config } = Route.useRouteContext();
   const search = Route.useSearch();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [currentTime, setCurrentTime] = useState(() =>
     getCurrentTimeInTimeZone(config.t)
   );
 
   // ランダムなフレーズを選択（言語が変わった時のみ再選択）
   const phrase = useMemo(() => getRandomElement(t.view.phrases), [t.view.phrases]);
+
+  // 言語に応じてフォントを選択
+  const fontFamily = locale === 'ja' ? 'Noto Sans JP, sans-serif' : 'Inter, sans-serif';
 
   // URLにsパラメータを追加（URL共有機能のため）
   useEffect(() => {
@@ -95,7 +98,7 @@ function ViewPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">
+        <h1 className="text-3xl font-bold mb-2" style={{ fontFamily, fontWeight: 700 }}>
           {phrase}
         </h1>
         <p className="text-muted-foreground">
