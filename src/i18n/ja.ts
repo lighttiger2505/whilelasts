@@ -18,6 +18,7 @@ export interface Translation {
   };
   view: {
     title: string;
+    phrases: string[];
     timeZone: string;
     progressFormat: string;
     lifespan: {
@@ -71,6 +72,18 @@ export const ja: Translation = {
   },
   view: {
     title: '残り時間',
+    phrases: [
+      'まだ時間はある',
+      'どう使うか自分で決める',
+      'この瞬間には意味がある',
+      '残された時あるうちに、人生を自分のものにしよう',
+      'まだ何も決まっていない',
+      'いまはまだ途中',
+      'この時間で、あなたは何をする?',
+      '選ぶ余地はまだある',
+      '今日を丁寧に生きよう',
+      'まだ終わっていない',
+    ],
     timeZone: 'タイムゾーン',
     progressFormat: '{elapsed} / {total}',
     lifespan: {

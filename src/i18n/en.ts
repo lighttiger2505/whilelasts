@@ -20,6 +20,18 @@ export const en: Translation = {
   },
   view: {
     title: 'Time Remaining',
+    phrases: [
+      'You still have time.',
+      'Decide what to do with it.',
+      'This moment still counts.',
+      'While it lasts, make it yours.',
+      'Nothing is decided yet.',
+      'You\'re still on the way.',
+      'What will you make of this time?',
+      'There\'s room to choose.',
+      'Use today gently.',
+      'It hasn\'t ended.',
+    ],
     timeZone: 'Time Zone',
     progressFormat: '{elapsed} / {total}',
     lifespan: {

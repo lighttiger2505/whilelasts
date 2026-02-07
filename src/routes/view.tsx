@@ -1,9 +1,10 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { intervalToDuration } from 'date-fns';
 import { encodeConfig, decodeConfig } from '@/lib/url-codec';
 import { validateConfig } from '@/lib/validation';
 import { loadConfigFromStorage, saveConfigToStorage } from '@/lib/storage';
+import { getRandomElement } from '@/lib/utils';
 import {
   calculateAllTargets,
   getCurrentTimeInTimeZone,
@@ -68,6 +69,9 @@ function ViewPage() {
     getCurrentTimeInTimeZone(config.t)
   );
 
+  // ランダムなフレーズを選択（言語が変わった時のみ再選択）
+  const phrase = useMemo(() => getRandomElement(t.view.phrases), [t.view.phrases]);
+
   // URLにsパラメータを追加（URL共有機能のため）
   useEffect(() => {
     if (!search.s) {
@@ -91,7 +95,9 @@ function ViewPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">{t.view.title}</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {phrase}
+        </h1>
         <p className="text-muted-foreground">
           {t.view.timeZone}: {config.t}
         </p>
