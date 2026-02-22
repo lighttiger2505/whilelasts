@@ -36,3 +36,6 @@ routeTree.gen.ts
 
 # Oxc cache
 .oxc_cache/
+
+# Claude code
+.claude/settings.local.json
