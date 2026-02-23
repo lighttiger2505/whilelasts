@@ -7,8 +7,6 @@ import {
   differenceInHours,
   differenceInMinutes,
   differenceInSeconds,
-  endOfYear,
-  endOfMonth,
   setHours,
   setMinutes,
   setSeconds,
@@ -82,40 +80,6 @@ export function calculateTimeRemaining(from: Date, to: Date): TimeRemaining {
 }
 
 /**
- * 進捗メトリクスを計算（経過期間/全体期間）
- */
-export function calculateProgressMetrics(
-  startDate: Date,
-  currentTime: Date,
-  targetDate: Date,
-  unit: "years" | "months" | "days",
-): ProgressMetrics {
-  let elapsed: number;
-  let total: number;
-
-  switch (unit) {
-    case "years":
-      elapsed = differenceInYears(currentTime, startDate) + 1;
-      total = differenceInYears(targetDate, startDate) + 1;
-      break;
-    case "months":
-      elapsed = differenceInMonths(currentTime, startDate) + 1;
-      total = differenceInMonths(targetDate, startDate) + 1;
-      break;
-    case "days":
-      elapsed = differenceInDays(currentTime, startDate) + 1;
-      total = differenceInDays(targetDate, startDate) + 1;
-      break;
-  }
-
-  return {
-    elapsed,
-    total,
-    unit,
-  };
-}
-
-/**
  * 次の誕生日を計算
  */
 export function calculateNextBirthday(
@@ -168,12 +132,13 @@ export function calculateStartOfYear(currentTime: Date): Date {
 }
 
 /**
- * 今年末を計算
+ * 今年末を計算（翌年1月1日 00:00:00.000）
  */
 export function calculateEndOfYear(currentTime: Date): Date {
-  const endOfYearDate = endOfYear(currentTime);
-  // 23:59:59に設定
-  return setMilliseconds(setSeconds(setMinutes(setHours(endOfYearDate, 23), 59), 59), 999);
+  return setMilliseconds(
+    setSeconds(setMinutes(setHours(new Date(currentTime.getFullYear() + 1, 0, 1), 0), 0), 0),
+    0,
+  );
 }
 
 /**
@@ -190,12 +155,19 @@ export function calculateStartOfMonth(currentTime: Date): Date {
 }
 
 /**
- * 今月末を計算
+ * 今月末を計算（翌月1日 00:00:00.000）
  */
 export function calculateEndOfMonth(currentTime: Date): Date {
-  const endOfMonthDate = endOfMonth(currentTime);
-  // 23:59:59に設定
-  return setMilliseconds(setSeconds(setMinutes(setHours(endOfMonthDate, 23), 59), 59), 999);
+  return setMilliseconds(
+    setSeconds(
+      setMinutes(
+        setHours(new Date(currentTime.getFullYear(), currentTime.getMonth() + 1, 1), 0),
+        0,
+      ),
+      0,
+    ),
+    0,
+  );
 }
 
 /**
@@ -221,7 +193,11 @@ export function calculateLifespan(config: ConfigV1, currentTime: Date): TimeTarg
     startDate,
     targetDate,
     remaining: calculateTimeRemaining(currentTime, targetDate),
-    progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "years"),
+    progressMetrics: {
+      elapsed: differenceInYears(currentTime, startDate),
+      total: differenceInYears(targetDate, startDate),
+      unit: "years",
+    },
   };
 }
 
@@ -239,7 +215,11 @@ export function calculateNextBirthdayTarget(
     startDate,
     targetDate,
     remaining: calculateTimeRemaining(currentTime, targetDate),
-    progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "months"),
+    progressMetrics: {
+      elapsed: differenceInMonths(currentTime, startDate),
+      total: differenceInMonths(targetDate, startDate),
+      unit: "months",
+    },
   };
 }
 
@@ -253,7 +233,11 @@ export function calculateEndOfYearTarget(currentTime: Date): TimeTarget {
     startDate,
     targetDate,
     remaining: calculateTimeRemaining(currentTime, targetDate),
-    progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "months"),
+    progressMetrics: {
+      elapsed: differenceInMonths(currentTime, startDate),
+      total: differenceInMonths(targetDate, startDate),
+      unit: "months",
+    },
   };
 }
 
@@ -267,6 +251,10 @@ export function calculateEndOfMonthTarget(currentTime: Date): TimeTarget {
     startDate,
     targetDate,
     remaining: calculateTimeRemaining(currentTime, targetDate),
-    progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "days"),
+    progressMetrics: {
+      elapsed: differenceInDays(currentTime, startDate),
+      total: differenceInDays(targetDate, startDate),
+      unit: "days",
+    },
   };
 }
