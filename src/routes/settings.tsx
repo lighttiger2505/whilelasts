@@ -1,22 +1,28 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { encodeConfig, decodeConfig } from '@/lib/url-codec';
-import { validateAge, validateBirthday, validateTimeZone, validateConfig } from '@/lib/validation';
-import { TIMEZONES, getBrowserTimeZone } from '@/lib/timezones';
-import { loadConfigFromStorage, saveConfigToStorage } from '@/lib/storage';
-import { useI18n } from '@/i18n';
-import type { ConfigV1 } from '@/types/config';
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { encodeConfig, decodeConfig } from "@/lib/url-codec";
+import { validateAge, validateBirthday, validateTimeZone, validateConfig } from "@/lib/validation";
+import { TIMEZONES, getBrowserTimeZone } from "@/lib/timezones";
+import { loadConfigFromStorage, saveConfigToStorage } from "@/lib/storage";
+import { useI18n } from "@/i18n";
+import type { ConfigV1 } from "@/types/config";
 
 type SettingsSearch = {
   s?: string;
 };
 
-export const Route = createFileRoute('/settings')({
+export const Route = createFileRoute("/settings")({
   validateSearch: (search: Record<string, unknown>): SettingsSearch => {
     return {
       s: search.s ? (search.s as string) : undefined,
@@ -58,9 +64,9 @@ function SettingsPage() {
 
     // 優先順位3: デフォルト値
     return {
-      age: '80',
-      birthday: '',
-      timeZone: '',
+      age: "80",
+      birthday: "",
+      timeZone: "",
     };
   };
 
@@ -123,7 +129,7 @@ function SettingsPage() {
     const encoded = encodeConfig(config);
 
     // /view?s=<token> へナビゲート（URL共有のためsパラメータも設定）
-    navigate({ to: '/view', search: { s: encoded } });
+    navigate({ to: "/view", search: { s: encoded } });
   };
 
   return (
@@ -131,9 +137,7 @@ function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>{t.settings.title}</CardTitle>
-          <CardDescription>
-            {t.settings.description}
-          </CardDescription>
+          <CardDescription>{t.settings.description}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -148,9 +152,7 @@ function SettingsPage() {
                 min="1"
                 max="150"
               />
-              {errors.age && (
-                <p className="text-sm text-destructive">{errors.age}</p>
-              )}
+              {errors.age && <p className="text-sm text-destructive">{errors.age}</p>}
             </div>
 
             <div className="space-y-2">
@@ -161,9 +163,7 @@ function SettingsPage() {
                 value={birthday}
                 onChange={(e) => setBirthday(e.target.value)}
               />
-              {errors.birthday && (
-                <p className="text-sm text-destructive">{errors.birthday}</p>
-              )}
+              {errors.birthday && <p className="text-sm text-destructive">{errors.birthday}</p>}
             </div>
 
             <div className="space-y-2">
@@ -180,9 +180,7 @@ function SettingsPage() {
                   ))}
                 </SelectContent>
               </Select>
-              {errors.timeZone && (
-                <p className="text-sm text-destructive">{errors.timeZone}</p>
-              )}
+              {errors.timeZone && <p className="text-sm text-destructive">{errors.timeZone}</p>}
             </div>
 
             <Button type="submit" className="w-full">

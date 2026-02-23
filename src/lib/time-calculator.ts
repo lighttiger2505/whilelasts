@@ -13,9 +13,9 @@ import {
   setMinutes,
   setSeconds,
   setMilliseconds,
-} from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
-import type { ConfigV1 } from '@/types/config';
+} from "date-fns";
+import { toZonedTime } from "date-fns-tz";
+import type { ConfigV1 } from "@/types/config";
 
 export interface TimeRemaining {
   years: number;
@@ -28,9 +28,9 @@ export interface TimeRemaining {
 }
 
 export interface ProgressMetrics {
-  elapsed: number;    // 経過した期間
-  total: number;      // 全体の期間
-  unit: 'years' | 'months' | 'days';  // 表示単位
+  elapsed: number; // 経過した期間
+  total: number; // 全体の期間
+  unit: "years" | "months" | "days"; // 表示単位
 }
 
 /**
@@ -81,21 +81,21 @@ export function calculateProgressMetrics(
   startDate: Date,
   currentTime: Date,
   targetDate: Date,
-  unit: 'years' | 'months' | 'days'
+  unit: "years" | "months" | "days",
 ): ProgressMetrics {
   let elapsed: number;
   let total: number;
 
   switch (unit) {
-    case 'years':
+    case "years":
       elapsed = differenceInYears(currentTime, startDate) + 1;
       total = differenceInYears(targetDate, startDate) + 1;
       break;
-    case 'months':
+    case "months":
       elapsed = differenceInMonths(currentTime, startDate) + 1;
       total = differenceInMonths(targetDate, startDate) + 1;
       break;
-    case 'days':
+    case "days":
       elapsed = differenceInDays(currentTime, startDate) + 1;
       total = differenceInDays(targetDate, startDate) + 1;
       break;
@@ -114,7 +114,7 @@ export function calculateProgressMetrics(
 export function calculateNextBirthday(
   birthday: string,
   currentTime: Date,
-  _timeZone: string
+  _timeZone: string,
 ): Date {
   const birthdayDate = new Date(birthday);
   const currentYear = currentTime.getFullYear();
@@ -127,7 +127,7 @@ export function calculateNextBirthday(
     0,
     0,
     0,
-    0
+    0,
   );
 
   // 今年の誕生日が既に過ぎている場合は来年
@@ -144,7 +144,7 @@ export function calculateNextBirthday(
 export function calculatePreviousBirthday(
   birthday: string,
   currentTime: Date,
-  timeZone: string
+  timeZone: string,
 ): Date {
   const nextBirthday = calculateNextBirthday(birthday, currentTime, timeZone);
   return addYears(nextBirthday, -1);
@@ -155,17 +155,8 @@ export function calculatePreviousBirthday(
  */
 export function calculateStartOfYear(currentTime: Date): Date {
   return setMilliseconds(
-    setSeconds(
-      setMinutes(
-        setHours(
-          new Date(currentTime.getFullYear(), 0, 1),
-          0
-        ),
-        0
-      ),
-      0
-    ),
-    0
+    setSeconds(setMinutes(setHours(new Date(currentTime.getFullYear(), 0, 1), 0), 0), 0),
+    0,
   );
 }
 
@@ -184,16 +175,10 @@ export function calculateEndOfYear(currentTime: Date): Date {
 export function calculateStartOfMonth(currentTime: Date): Date {
   return setMilliseconds(
     setSeconds(
-      setMinutes(
-        setHours(
-          new Date(currentTime.getFullYear(), currentTime.getMonth(), 1),
-          0
-        ),
-        0
-      ),
-      0
+      setMinutes(setHours(new Date(currentTime.getFullYear(), currentTime.getMonth(), 1), 0), 0),
+      0,
     ),
-    0
+    0,
   );
 }
 
@@ -224,25 +209,30 @@ export function calculateAllTargets(config: ConfigV1, currentTime: Date) {
       startDate: birthday,
       targetDate: deathDate,
       remaining: calculateTimeRemaining(currentTime, deathDate),
-      progressMetrics: calculateProgressMetrics(birthday, currentTime, deathDate, 'years'),
+      progressMetrics: calculateProgressMetrics(birthday, currentTime, deathDate, "years"),
     },
     nextBirthday: {
       startDate: previousBirthday,
       targetDate: nextBirthday,
       remaining: calculateTimeRemaining(currentTime, nextBirthday),
-      progressMetrics: calculateProgressMetrics(previousBirthday, currentTime, nextBirthday, 'months'),
+      progressMetrics: calculateProgressMetrics(
+        previousBirthday,
+        currentTime,
+        nextBirthday,
+        "months",
+      ),
     },
     endOfYear: {
       startDate: startOfYear,
       targetDate: endOfYear,
       remaining: calculateTimeRemaining(currentTime, endOfYear),
-      progressMetrics: calculateProgressMetrics(startOfYear, currentTime, endOfYear, 'months'),
+      progressMetrics: calculateProgressMetrics(startOfYear, currentTime, endOfYear, "months"),
     },
     endOfMonth: {
       startDate: startOfMonth,
       targetDate: endOfMonth,
       remaining: calculateTimeRemaining(currentTime, endOfMonth),
-      progressMetrics: calculateProgressMetrics(startOfMonth, currentTime, endOfMonth, 'days'),
+      progressMetrics: calculateProgressMetrics(startOfMonth, currentTime, endOfMonth, "days"),
     },
   };
 }

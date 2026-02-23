@@ -1,9 +1,9 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { useState, useEffect } from 'react';
-import { useI18n } from '@/i18n';
-import { Button } from '@/components/ui/button';
-import { loadConfigFromStorage } from '@/lib/storage';
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { useState, useEffect } from "react";
+import { useI18n } from "@/i18n";
+import { Button } from "@/components/ui/button";
+import { loadConfigFromStorage } from "@/lib/storage";
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -21,7 +21,7 @@ function RootLayout() {
   }, []);
 
   const toggleLocale = () => {
-    setLocale(locale === 'ja' ? 'en' : 'ja');
+    setLocale(locale === "ja" ? "en" : "ja");
   };
 
   return (
@@ -38,7 +38,7 @@ function RootLayout() {
               </span>
             )}
             <Button variant="ghost" size="sm" onClick={toggleLocale}>
-              {locale === 'ja' ? 'EN' : 'JA'}
+              {locale === "ja" ? "EN" : "JA"}
             </Button>
           </div>
         </div>

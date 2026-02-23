@@ -1,7 +1,7 @@
-import type { ConfigV1 } from '@/types/config'
-import { validateConfig } from './validation'
+import type { ConfigV1 } from "@/types/config";
+import { validateConfig } from "./validation";
 
-const STORAGE_KEY = 'whilelasts_config'
+const STORAGE_KEY = "whilelasts_config";
 
 /**
  * LocalStorageから設定を読み込み、バリデーションを実行
@@ -9,23 +9,23 @@ const STORAGE_KEY = 'whilelasts_config'
  */
 export function loadConfigFromStorage(): ConfigV1 | null {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
+    const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) {
-      return null
+      return null;
     }
 
-    const parsed = JSON.parse(stored)
+    const parsed = JSON.parse(stored);
 
     if (!validateConfig(parsed)) {
       // 不正なデータを削除
-      clearConfigFromStorage()
-      return null
+      clearConfigFromStorage();
+      return null;
     }
 
-    return parsed
+    return parsed;
   } catch {
     // SecurityError（プライベートモード）やSyntaxError（不正なJSON）をキャッチ
-    return null
+    return null;
   }
 }
 
@@ -36,12 +36,12 @@ export function loadConfigFromStorage(): ConfigV1 | null {
  */
 export function saveConfigToStorage(config: ConfigV1): boolean {
   try {
-    const json = JSON.stringify(config)
-    localStorage.setItem(STORAGE_KEY, json)
-    return true
+    const json = JSON.stringify(config);
+    localStorage.setItem(STORAGE_KEY, json);
+    return true;
   } catch {
     // QuotaExceededError（容量超過）やSecurityError（プライベートモード）をキャッチ
-    return false
+    return false;
   }
 }
 
@@ -50,7 +50,7 @@ export function saveConfigToStorage(config: ConfigV1): boolean {
  */
 export function clearConfigFromStorage(): void {
   try {
-    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(STORAGE_KEY);
   } catch {
     // SecurityError（プライベートモード）をキャッチ
   }

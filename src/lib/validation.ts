@@ -1,10 +1,10 @@
-import type { ConfigV1 } from '@/types/config';
+import type { ConfigV1 } from "@/types/config";
 
 /**
  * ConfigV1のバリデーション
  */
 export function validateConfig(config: unknown): config is ConfigV1 {
-  if (typeof config !== 'object' || config === null) {
+  if (typeof config !== "object" || config === null) {
     return false;
   }
 
@@ -16,12 +16,12 @@ export function validateConfig(config: unknown): config is ConfigV1 {
   }
 
   // 死ぬ年齢の妥当性チェック（正の整数）
-  if (typeof c.a !== 'number' || c.a <= 0 || !Number.isInteger(c.a)) {
+  if (typeof c.a !== "number" || c.a <= 0 || !Number.isInteger(c.a)) {
     return false;
   }
 
   // 誕生日形式チェック（YYYY-MM-DD + 有効な日付）
-  if (typeof c.b !== 'string') {
+  if (typeof c.b !== "string") {
     return false;
   }
 
@@ -37,17 +37,13 @@ export function validateConfig(config: unknown): config is ConfigV1 {
   }
 
   // YYYY-MM-DD形式が実際の日付と一致するか確認
-  const [year, month, day] = c.b.split('-').map(Number);
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() + 1 !== month ||
-    date.getDate() !== day
-  ) {
+  const [year, month, day] = c.b.split("-").map(Number);
+  if (date.getFullYear() !== year || date.getMonth() + 1 !== month || date.getDate() !== day) {
     return false;
   }
 
   // タイムゾーン名の妥当性チェック
-  if (typeof c.t !== 'string') {
+  if (typeof c.t !== "string") {
     return false;
   }
 
@@ -82,12 +78,8 @@ export function validateBirthday(birthday: string): boolean {
     return false;
   }
 
-  const [year, month, day] = birthday.split('-').map(Number);
-  return (
-    date.getFullYear() === year &&
-    date.getMonth() + 1 === month &&
-    date.getDate() === day
-  );
+  const [year, month, day] = birthday.split("-").map(Number);
+  return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day;
 }
 
 /**

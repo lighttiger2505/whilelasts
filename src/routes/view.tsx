@@ -1,23 +1,23 @@
-import { createFileRoute, redirect, Link } from '@tanstack/react-router';
-import { useState, useEffect, useMemo } from 'react';
-import { intervalToDuration } from 'date-fns';
-import { encodeConfig, decodeConfig } from '@/lib/url-codec';
-import { validateConfig } from '@/lib/validation';
-import { loadConfigFromStorage, saveConfigToStorage } from '@/lib/storage';
-import { getRandomElement } from '@/lib/utils';
+import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import { useState, useEffect, useMemo } from "react";
+import { intervalToDuration } from "date-fns";
+import { encodeConfig, decodeConfig } from "@/lib/url-codec";
+import { validateConfig } from "@/lib/validation";
+import { loadConfigFromStorage, saveConfigToStorage } from "@/lib/storage";
+import { getRandomElement } from "@/lib/utils";
 import {
   calculateAllTargets,
   getCurrentTimeInTimeZone,
   type ProgressMetrics,
-} from '@/lib/time-calculator';
-import { useI18n } from '@/i18n';
-import { Progress } from '@/components/ui/progress';
+} from "@/lib/time-calculator";
+import { useI18n } from "@/i18n";
+import { Progress } from "@/components/ui/progress";
 
 type ViewSearch = {
   s?: string;
 };
 
-export const Route = createFileRoute('/view')({
+export const Route = createFileRoute("/view")({
   validateSearch: (search: Record<string, unknown>): ViewSearch => {
     return {
       s: search.s ? (search.s as string) : undefined,
@@ -43,7 +43,7 @@ export const Route = createFileRoute('/view')({
     }
 
     // どちらもない場合は設定画面へリダイレクト
-    throw redirect({ to: '/settings' });
+    throw redirect({ to: "/settings" });
   },
   component: ViewPage,
 });
@@ -65,22 +65,20 @@ function ViewPage() {
   const { config } = Route.useRouteContext();
   const search = Route.useSearch();
   const { t, locale } = useI18n();
-  const [currentTime, setCurrentTime] = useState(() =>
-    getCurrentTimeInTimeZone(config.t)
-  );
+  const [currentTime, setCurrentTime] = useState(() => getCurrentTimeInTimeZone(config.t));
 
   // ランダムなフレーズを選択（言語が変わった時のみ再選択）
   const phrase = useMemo(() => getRandomElement(t.view.phrases), [t.view.phrases]);
 
   // 言語に応じてフォントを選択
-  const fontFamily = locale === 'ja' ? 'Noto Sans JP, sans-serif' : 'Inter, sans-serif';
+  const fontFamily = locale === "ja" ? "Noto Sans JP, sans-serif" : "Inter, sans-serif";
 
   // URLにsパラメータを追加（URL共有機能のため）
   useEffect(() => {
     if (!search.s) {
       const encoded = encodeConfig(config);
       const newUrl = `${window.location.pathname}?s=${encoded}`;
-      window.history.replaceState({}, '', newUrl);
+      window.history.replaceState({}, "", newUrl);
     }
   }, [search.s, config]);
 
@@ -111,7 +109,7 @@ function ViewPage() {
           currentTime={currentTime}
           remaining={targets.lifespan.remaining}
           progressMetrics={targets.lifespan.progressMetrics}
-          titleUnits={['years', 'months']}
+          titleUnits={["years", "months"]}
         />
         <TimeCard
           title={t.view.nextBirthday.title}
@@ -120,7 +118,7 @@ function ViewPage() {
           currentTime={currentTime}
           remaining={targets.nextBirthday.remaining}
           progressMetrics={targets.nextBirthday.progressMetrics}
-          titleUnits={['months', 'days']}
+          titleUnits={["months", "days"]}
         />
         <TimeCard
           title={t.view.endOfYear.title}
@@ -129,7 +127,7 @@ function ViewPage() {
           currentTime={currentTime}
           remaining={targets.endOfYear.remaining}
           progressMetrics={targets.endOfYear.progressMetrics}
-          titleUnits={['months', 'days']}
+          titleUnits={["months", "days"]}
         />
         <TimeCard
           title={t.view.endOfMonth.title}
@@ -138,7 +136,7 @@ function ViewPage() {
           currentTime={currentTime}
           remaining={targets.endOfMonth.remaining}
           progressMetrics={targets.endOfMonth.progressMetrics}
-          titleUnits={['days']}
+          titleUnits={["days"]}
         />
       </div>
 
@@ -194,12 +192,12 @@ function TimeCard({
   };
 
   const gridUnits: TimeUnit[] = [
-    { key: 'years', getValue: (r) => r.years, getLabel: (u) => u.years },
-    { key: 'months', getValue: (r) => r.months, getLabel: (u) => u.months },
-    { key: 'weeks', getValue: (r) => r.weeks, getLabel: (u) => u.weeks },
-    { key: 'days', getValue: (r) => r.days, getLabel: (u) => u.days },
-    { key: 'hours', getValue: (r) => r.hours, getLabel: (u) => u.hours },
-    { key: 'minutes', getValue: (r) => r.minutes, getLabel: (u) => u.minutes },
+    { key: "years", getValue: (r) => r.years, getLabel: (u) => u.years },
+    { key: "months", getValue: (r) => r.months, getLabel: (u) => u.months },
+    { key: "weeks", getValue: (r) => r.weeks, getLabel: (u) => u.weeks },
+    { key: "days", getValue: (r) => r.days, getLabel: (u) => u.days },
+    { key: "hours", getValue: (r) => r.hours, getLabel: (u) => u.hours },
+    { key: "minutes", getValue: (r) => r.minutes, getLabel: (u) => u.minutes },
   ];
 
   // タイトル用の階層的な時間を計算
@@ -211,20 +209,20 @@ function TimeCard({
   // タイトル用の残り時間を取得（階層的な表示用）
   const getHierarchicalValue = (unitKey: keyof typeof remaining): number => {
     switch (unitKey) {
-      case 'years':
+      case "years":
         return duration.years ?? 0;
-      case 'months':
+      case "months":
         return duration.months ?? 0;
-      case 'weeks':
+      case "weeks":
         // intervalToDurationはweeksを返さないので、daysから計算
         return Math.floor((duration.days ?? 0) / 7);
-      case 'days':
+      case "days":
         return duration.days ?? 0;
-      case 'hours':
+      case "hours":
         return duration.hours ?? 0;
-      case 'minutes':
+      case "minutes":
         return duration.minutes ?? 0;
-      case 'seconds':
+      case "seconds":
         return duration.seconds ?? 0;
       default:
         return 0;
@@ -237,20 +235,23 @@ function TimeCard({
         {title}
         {titleUnits && titleUnits.length > 0 && (
           <>
-            {' '}
+            {" "}
             <span className="text-primary font-bold">
-              {titleUnits.map((unitKey, index) => {
-                const unit = gridUnits.find(u => u.key === unitKey);
-                if (!unit) return null;
-                const value = getHierarchicalValue(unitKey);
-                const label = unit.getLabel(t.view.units);
-                return (
-                  <span key={unitKey}>
-                    {value.toLocaleString()}{label}
-                    {index < titleUnits.length - 1 && ''}
-                  </span>
-                );
-              }).filter(Boolean)}
+              {titleUnits
+                .map((unitKey, index) => {
+                  const unit = gridUnits.find((u) => u.key === unitKey);
+                  if (!unit) return null;
+                  const value = getHierarchicalValue(unitKey);
+                  const label = unit.getLabel(t.view.units);
+                  return (
+                    <span key={unitKey}>
+                      {value.toLocaleString()}
+                      {label}
+                      {index < titleUnits.length - 1 && ""}
+                    </span>
+                  );
+                })
+                .filter(Boolean)}
             </span>
           </>
         )}
@@ -263,17 +264,14 @@ function TimeCard({
           {/* 現在値と最大値の表示 */}
           <span>
             {t.view.progressFormat
-              .replace('{elapsed}', Math.max(0, progressMetrics.elapsed).toLocaleString())
-              .replace('{total}', Math.max(0, progressMetrics.total).toLocaleString())}
+              .replace("{elapsed}", Math.max(0, progressMetrics.elapsed).toLocaleString())
+              .replace("{total}", Math.max(0, progressMetrics.total).toLocaleString())}
             {t.view.units[progressMetrics.unit]}
           </span>
           {/* パーセント表示 */}
-          <span>
-            {progress.toFixed(1)}%
-          </span>
+          <span>{progress.toFixed(1)}%</span>
         </div>
       </div>
-
     </div>
   );
 }

@@ -22,6 +22,12 @@ pnpm build
 # ビルドしたアプリのプレビュー
 pnpm preview
 
+# コードのフォーマット（oxfmt）
+pnpm fmt
+
+# フォーマットチェック（CI向け）
+pnpm fmt:check
+
 # コードのlintチェック（oxlint）
 pnpm lint
 
@@ -31,7 +37,7 @@ pnpm lint:fix
 # TypeScriptの型チェック
 pnpm type-check
 
-# 一括チェック（TSRルート生成 + lint + 型チェック）
+# 一括チェック（TSRルート生成 + フォーマット + lint + 型チェック）
 pnpm check
 
 # Cloudflare Pagesへデプロイ（ビルド含む）
@@ -65,12 +71,14 @@ pnpm deploy
 ### ルーティングとガード
 
 `src/routes/view.tsx`の`beforeLoad`フック:
+
 - `s`パラメータが不在、デコード失敗、バリデーション失敗時は全て`/settings`にリダイレクト
 - 成功時は復元した`config`をルートコンテキストに渡す
 
 ### 時間計算ロジック
 
 `src/lib/time-calculator.ts`:
+
 - **死亡予定日**: 誕生日 + 死亡年齢の誕生日（00:00:00）
 - **次の誕生日**: 今年の誕生日が過ぎていれば来年
 - **年末/月末**: 23:59:59に設定
@@ -79,12 +87,14 @@ pnpm deploy
 ### 多言語対応
 
 `src/i18n/`:
+
 - 日本語（`ja.ts`）と英語（`en.ts`）に対応
 - `useI18n()`フックでロケール切り替えと翻訳テキスト取得
 
 ### 設定データモデル（v1）
 
 `src/types/config.ts`:
+
 ```typescript
 {
   v: 1,          // schema version（将来の拡張に対応）
@@ -120,5 +130,6 @@ src/
 ## デプロイ
 
 Cloudflare Pagesを想定:
+
 - SPAとして静的ビルド（`pnpm build`）
 - 直リンク/リロード対応のため、全パスを`index.html`にフォールバックする設定が必要
