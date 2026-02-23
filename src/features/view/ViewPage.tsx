@@ -2,7 +2,13 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { encodeConfig } from "@/lib/url-codec";
 import { getRandomElement } from "@/lib/utils";
-import { calculateAllTargets, getCurrentTimeInTimeZone } from "@/lib/time-calculator";
+import {
+  calculateLifespan,
+  calculateNextBirthdayTarget,
+  calculateEndOfYearTarget,
+  calculateEndOfMonthTarget,
+  getCurrentTimeInTimeZone,
+} from "@/lib/time-calculator";
 import { useI18n } from "@/i18n";
 import { TimeCard } from "./TimeCard";
 import { ShareLinkButton } from "./ShareLinkButton";
@@ -37,7 +43,12 @@ export function ViewPage({ config, searchParam }: ViewPageProps) {
     return () => clearInterval(timer);
   }, [config.t]);
 
-  const targets = calculateAllTargets(config, currentTime);
+  const targets = {
+    lifespan: calculateLifespan(config, currentTime),
+    nextBirthday: calculateNextBirthdayTarget(config.b, currentTime, config.t),
+    endOfYear: calculateEndOfYearTarget(currentTime),
+    endOfMonth: calculateEndOfMonthTarget(currentTime),
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

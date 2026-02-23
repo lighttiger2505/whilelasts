@@ -270,23 +270,3 @@ export function calculateEndOfMonthTarget(currentTime: Date): TimeTarget {
     progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "days"),
   };
 }
-
-/**
- * 設定に基づいて全ての目標日時を計算
- */
-export function calculateAllTargets(
-  config: ConfigV1,
-  currentTime: Date,
-): {
-  lifespan: TimeTarget;
-  nextBirthday: TimeTarget;
-  endOfYear: TimeTarget;
-  endOfMonth: TimeTarget;
-} {
-  return {
-    lifespan: calculateLifespan(config, currentTime),
-    nextBirthday: calculateNextBirthdayTarget(config.b, currentTime, config.t),
-    endOfYear: calculateEndOfYearTarget(currentTime),
-    endOfMonth: calculateEndOfMonthTarget(currentTime),
-  };
-}
