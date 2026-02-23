@@ -1,6 +1,7 @@
 import { intervalToDuration } from "date-fns";
 import { useI18n } from "@/i18n";
 import { Progress } from "@/components/ui/progress";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { calculateProgress, type TimeRemaining, type ProgressMetrics } from "@/lib/time-calculator";
 
 export interface TimeCardProps {
@@ -95,18 +96,18 @@ export function TimeCard({
         )}
       </h2>
 
-      <div className="mb-4">
+      <Field>
         <Progress value={progress} className="h-3" />
-        <div className="flex justify-between items-center text-xs text-muted-foreground mt-1">
+        <FieldLabel className="w-full text-xs text-muted-foreground font-normal">
           <span>
             {t.view.progressFormat
               .replace("{elapsed}", Math.max(0, progressMetrics.elapsed).toLocaleString())
               .replace("{total}", Math.max(0, progressMetrics.total).toLocaleString())}
             {t.view.units[progressMetrics.unit]}
           </span>
-          <span>{progress.toFixed(1)}%</span>
-        </div>
-      </div>
+          <span className="ml-auto">{progress.toFixed(1)}%</span>
+        </FieldLabel>
+      </Field>
     </div>
   );
 }
