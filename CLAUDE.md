@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **whilelasts** は、人生の残り時間をさまざまな単位で可視化するフロントエンドのみのWebアプリケーションです。
 
 - DBなし・APIサーバーなし
-- 設定情報は全てURLのクエリパラメータ（`s`パラメータ）にBase64URL形式でエンコードして保持
-- URLが唯一の永続状態であり、URLを共有することで設定を復元可能
+- 設定情報は URLのクエリパラメータ（`s`パラメータ）と LocalStorage の二重永続化で保持
+- URLを共有することで設定を復元可能（URLパラメータが優先）
 
 ## 開発コマンド
 
@@ -44,16 +44,6 @@ pnpm check
 pnpm deploy
 ```
 
-## 技術スタック
-
-- **フレームワーク**: React 19 + TypeScript + Vite
-- **ルーティング**: TanStack Router (file-based routing)
-  - `tsr generate`でルート定義を自動生成（ビルド前に必須）
-- **UI**: shadcn/ui + Tailwind CSS v4
-- **日時計算**: date-fns + date-fns-tz
-- **Linter**: oxlint（高速JavaScriptリンター）
-- **パッケージマネージャー**: pnpm
-
 ## コアアーキテクチャ
 
 ### 設定データフロー
@@ -68,12 +58,24 @@ pnpm deploy
 3. **バリデーション**: `src/lib/validation.ts`
    - 年齢（1-150歳）、誕生日（YYYY-MM-DD形式）、タイムゾーン（IANA TZ名）の妥当性チェック
 
+4. **永続化**: `src/lib/storage.ts`
+   - LocalStorage（キー: `whilelasts_config`）への読み書きと削除
+   - 読み込み時にバリデーションを実行し、不正なデータは自動削除
+
 ### ルーティングとガード
 
 `src/routes/view.tsx`の`beforeLoad`フック:
 
-- `s`パラメータが不在、デコード失敗、バリデーション失敗時は全て`/settings`にリダイレクト
-- 成功時は復元した`config`をルートコンテキストに渡す
+1. URLパラメータ`s`が存在 → デコード・バリデーション成功時はLocalStorageにも保存して`config`を返す
+2. URLパラメータが不在またはデコード失敗 → LocalStorageから読み込みを試みる
+3. どちらも失敗 → `/settings`にリダイレクト
+
+### feature-basedコンポーネントパターン
+
+ルートファイル（`src/routes/*.tsx`）は薄いラッパー。実装は対応するfeatureコンポーネントに委譲:
+
+- `src/routes/settings.tsx` → `src/features/settings/SettingsPage.tsx`
+- `src/routes/view.tsx` → `src/features/view/ViewPage.tsx`
 
 ### 時間計算ロジック
 
@@ -109,18 +111,72 @@ pnpm deploy
 ```
 src/
 ├── components/ui/    # shadcn/uiコンポーネント
+├── features/        # feature-basedコンポーネント
+│   ├── settings/    # 設定画面（SettingsPage.tsx）
+│   └── view/        # 残り時間表示画面（ViewPage.tsx, TimeCard.tsx, ShareLinkButton.tsx）
 ├── i18n/            # 多言語対応
 ├── lib/             # コアロジック（純関数）
 │   ├── url-codec.ts      # Base64URLエンコード/デコード
 │   ├── validation.ts     # バリデーション
 │   ├── time-calculator.ts # 時間計算
-│   └── timezones.ts      # タイムゾーンリスト
+│   ├── storage.ts        # LocalStorage永続化
+│   ├── timezones.ts      # タイムゾーンリスト
+│   └── utils.ts          # 汎用ユーティリティ（cn等）
 ├── routes/          # TanStack Routerのファイルベースルーティング
 │   ├── __root.tsx   # ルートレイアウト
 │   ├── index.tsx    # トップページ
-│   ├── settings.tsx # 設定画面
-│   └── view.tsx     # 残り時間表示画面
+│   ├── settings.tsx # 設定画面（SettingsPageへの薄いラッパー）
+│   └── view.tsx     # 残り時間表示画面（ViewPageへの薄いラッパー）
 └── types/           # TypeScript型定義
+```
+
+## 品質ツーリング
+
+### Lefthook（pre-commitフック）
+
+`lefthook.yml`で定義。TS/JSファイルのステージング時に並列実行:
+
+- `fmt-check`: `pnpm oxfmt --check {staged_files}`
+- `lint`: `pnpm oxlint {staged_files} --tsconfig tsconfig.json`
+- `type-check`: `pnpm tsc --noEmit`
+
+### Claude Codeフック（`.claude/hooks/`）
+
+- **PostToolUse（Write/Edit後）**: oxfmtフォーマットチェック + oxlintチェックを実行
+- **Stop前**: `pnpm tsc --noEmit`で型エラーがないか確認
+
+### CI/CD（GitHub Actions）
+
+`.github/workflows/deploy.yml`: `main`ブランチへのpush時に実行:
+
+1. `pnpm check`（フォーマット + lint + 型チェック）
+2. `pnpm build`
+3. Cloudflare Pagesへデプロイ
+
+## コーディング規約
+
+### フォーマット（oxfmt）
+
+- 行幅: 100文字
+- クォート: ダブルクォート
+- Trailing commas: あり
+
+### Linter（oxlint）
+
+- `no-explicit-any: error`
+- `no-console: warn`
+
+### コミット規約
+
+Conventional Commits形式を使用:
+
+```
+feat(scope): 新機能
+fix(scope): バグ修正
+refactor(scope): リファクタリング
+style(scope): フォーマット変更
+docs(scope): ドキュメント更新
+build(scope): ビルド設定変更
 ```
 
 ## パスエイリアス
