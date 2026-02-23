@@ -33,6 +33,13 @@ export interface ProgressMetrics {
   unit: "years" | "months" | "days"; // 表示単位
 }
 
+export interface TimeTarget {
+  startDate: Date;
+  targetDate: Date;
+  remaining: TimeRemaining;
+  progressMetrics: ProgressMetrics;
+}
+
 /**
  * 誕生日（開始日）を計算
  */
@@ -205,47 +212,81 @@ export function calculateProgress(start: Date, current: Date, target: Date): num
 }
 
 /**
+ * 寿命の目標日時を計算
+ */
+export function calculateLifespan(config: ConfigV1, currentTime: Date): TimeTarget {
+  const startDate = calculateBirthday(config.b);
+  const targetDate = calculateDeathDate(config);
+  return {
+    startDate,
+    targetDate,
+    remaining: calculateTimeRemaining(currentTime, targetDate),
+    progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "years"),
+  };
+}
+
+/**
+ * 次の誕生日の目標日時を計算
+ */
+export function calculateNextBirthdayTarget(
+  birthday: string,
+  currentTime: Date,
+  timeZone: string,
+): TimeTarget {
+  const startDate = calculatePreviousBirthday(birthday, currentTime, timeZone);
+  const targetDate = calculateNextBirthday(birthday, currentTime, timeZone);
+  return {
+    startDate,
+    targetDate,
+    remaining: calculateTimeRemaining(currentTime, targetDate),
+    progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "months"),
+  };
+}
+
+/**
+ * 年末の目標日時を計算
+ */
+export function calculateEndOfYearTarget(currentTime: Date): TimeTarget {
+  const startDate = calculateStartOfYear(currentTime);
+  const targetDate = calculateEndOfYear(currentTime);
+  return {
+    startDate,
+    targetDate,
+    remaining: calculateTimeRemaining(currentTime, targetDate),
+    progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "months"),
+  };
+}
+
+/**
+ * 月末の目標日時を計算
+ */
+export function calculateEndOfMonthTarget(currentTime: Date): TimeTarget {
+  const startDate = calculateStartOfMonth(currentTime);
+  const targetDate = calculateEndOfMonth(currentTime);
+  return {
+    startDate,
+    targetDate,
+    remaining: calculateTimeRemaining(currentTime, targetDate),
+    progressMetrics: calculateProgressMetrics(startDate, currentTime, targetDate, "days"),
+  };
+}
+
+/**
  * 設定に基づいて全ての目標日時を計算
  */
-export function calculateAllTargets(config: ConfigV1, currentTime: Date) {
-  const birthday = calculateBirthday(config.b);
-  const deathDate = calculateDeathDate(config);
-  const previousBirthday = calculatePreviousBirthday(config.b, currentTime, config.t);
-  const nextBirthday = calculateNextBirthday(config.b, currentTime, config.t);
-  const startOfYear = calculateStartOfYear(currentTime);
-  const endOfYear = calculateEndOfYear(currentTime);
-  const startOfMonth = calculateStartOfMonth(currentTime);
-  const endOfMonth = calculateEndOfMonth(currentTime);
-
+export function calculateAllTargets(
+  config: ConfigV1,
+  currentTime: Date,
+): {
+  lifespan: TimeTarget;
+  nextBirthday: TimeTarget;
+  endOfYear: TimeTarget;
+  endOfMonth: TimeTarget;
+} {
   return {
-    lifespan: {
-      startDate: birthday,
-      targetDate: deathDate,
-      remaining: calculateTimeRemaining(currentTime, deathDate),
-      progressMetrics: calculateProgressMetrics(birthday, currentTime, deathDate, "years"),
-    },
-    nextBirthday: {
-      startDate: previousBirthday,
-      targetDate: nextBirthday,
-      remaining: calculateTimeRemaining(currentTime, nextBirthday),
-      progressMetrics: calculateProgressMetrics(
-        previousBirthday,
-        currentTime,
-        nextBirthday,
-        "months",
-      ),
-    },
-    endOfYear: {
-      startDate: startOfYear,
-      targetDate: endOfYear,
-      remaining: calculateTimeRemaining(currentTime, endOfYear),
-      progressMetrics: calculateProgressMetrics(startOfYear, currentTime, endOfYear, "months"),
-    },
-    endOfMonth: {
-      startDate: startOfMonth,
-      targetDate: endOfMonth,
-      remaining: calculateTimeRemaining(currentTime, endOfMonth),
-      progressMetrics: calculateProgressMetrics(startOfMonth, currentTime, endOfMonth, "days"),
-    },
+    lifespan: calculateLifespan(config, currentTime),
+    nextBirthday: calculateNextBirthdayTarget(config.b, currentTime, config.t),
+    endOfYear: calculateEndOfYearTarget(currentTime),
+    endOfMonth: calculateEndOfMonthTarget(currentTime),
   };
 }
