@@ -192,6 +192,19 @@ export function calculateEndOfMonth(currentTime: Date): Date {
 }
 
 /**
+ * 進捗率を計算（0-100%）
+ */
+export function calculateProgress(start: Date, current: Date, target: Date): number {
+  const total = target.getTime() - start.getTime();
+  const elapsed = current.getTime() - start.getTime();
+
+  if (total <= 0) return 100;
+
+  const percentage = (elapsed / total) * 100;
+  return Math.min(100, Math.max(0, percentage));
+}
+
+/**
  * 設定に基づいて全ての目標日時を計算
  */
 export function calculateAllTargets(config: ConfigV1, currentTime: Date) {
