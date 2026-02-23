@@ -202,9 +202,6 @@ function TimeCard({
     { key: 'minutes', getValue: (r) => r.minutes, getLabel: (u) => u.minutes },
   ];
 
-  // 値がゼロより大きい単位のみをフィルタリング
-  const visibleUnits = gridUnits.filter(unit => unit.getValue(remaining) > 0);
-
   // タイトル用の階層的な時間を計算
   const duration = intervalToDuration({
     start: currentTime,
@@ -277,20 +274,6 @@ function TimeCard({
         </div>
       </div>
 
-      {/* 既存の時間表示 */}
-      <div className="space-y-2">
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          {visibleUnits.map((unit) => {
-            const value = unit.getValue(remaining);
-            const label = unit.getLabel(t.view.units);
-            return (
-              <div key={unit.key}>
-                <span className="font-semibold">{value.toLocaleString()}</span> {label}
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }
